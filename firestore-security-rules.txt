@@ -1,0 +1,21 @@
+// Firestore Security Rules for Clarity Journal
+// Copy these rules to Firebase Console > Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can only read/write their own journal entries
+    match /entries/{entryId} {
+      allow read, write: if request.auth != null && 
+                         request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+                    request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Future: Add rules for other collections (reminders, insights, etc.)
+    // match /reminders/{reminderId} {
+    //   allow read, write: if request.auth != null && 
+    //                      request.auth.uid == resource.data.userId;
+    // }
+  }
+}
